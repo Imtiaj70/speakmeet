@@ -1,0 +1,8 @@
+{
+  "name": "SpeakMate - Live English Speaking & Practice Platform",
+  "description": "Practice English naturally with people from around the world through live audio rooms, conversation topics, and partner matching.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
