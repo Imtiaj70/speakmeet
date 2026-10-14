@@ -457,29 +457,6 @@ export const VoiceRoomPreviewPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Speaker Seating Stage */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Interactive Conversation Sparks / Icebreaker Deck */}
-          <IcebreakerCard />
-
-          {/* Solo Warm-up Banner when room has 1 participant */}
-          {participants.length <= 1 && !isClosed && (
-            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900 dark:text-amber-200">
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="w-4 h-4 text-amber-500 shrink-0 animate-pulse" />
-                <span>
-                  <strong>Solo Warm-Up Mode Active:</strong> You arrived early! Practice reading the prompt above aloud for 60 seconds while other learners connect.
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={handleCopyLink}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shrink-0 text-xs shadow-xs transition-all active:scale-95 cursor-pointer"
-              >
-                {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedLink ? 'Link Copied!' : 'Invite a Friend'}</span>
-              </button>
-            </div>
-          )}
-
           {/* Seating Stage Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -769,6 +746,29 @@ export const VoiceRoomPreviewPage: React.FC = () => {
               </span>
             </div>
           </div>
+
+          {/* Solo Warm-up Banner when room has 1 participant */}
+          {participants.length <= 1 && !isClosed && (
+            <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-900 dark:text-amber-200">
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4 text-amber-500 shrink-0 animate-pulse" />
+                <span>
+                  <strong>Solo Warm-Up Mode Active:</strong> You arrived early! Practice reading the conversation prompt below aloud for 60 seconds while other learners connect.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shrink-0 text-xs shadow-xs transition-all active:scale-95 cursor-pointer"
+              >
+                {copiedLink ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedLink ? 'Link Copied!' : 'Invite a Friend'}</span>
+              </button>
+            </div>
+          )}
+
+          {/* Interactive Conversation Sparks / Icebreaker Deck (Positioned below the speaking stage) */}
+          <IcebreakerCard />
         </div>
 
         {/* Right Sidebar: Discussion Questions & Rules */}
