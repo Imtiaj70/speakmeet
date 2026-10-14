@@ -142,7 +142,7 @@ export const RoomsPage: React.FC = () => {
             ) : (
               <Zap className="w-4 h-4 fill-white" />
             )}
-            <span>{isMatching ? 'Connecting...' : 'Quick Match (১-ক্লিক জয়েন)'}</span>
+            <span>{isMatching ? 'Connecting...' : 'Quick Match'}</span>
           </button>
 
           <Button
