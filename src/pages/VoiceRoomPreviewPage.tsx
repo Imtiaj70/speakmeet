@@ -51,6 +51,9 @@ import { useRoomSocket } from '../hooks/useRoomSocket';
 import { useVoiceRoom } from '../hooks/useVoiceRoom';
 import { AdBanner } from '../components/ads/AdBanner';
 import { IcebreakerCard } from '../components/rooms/IcebreakerCard';
+import { OpenStageSeat } from '../components/room/OpenStageSeat';
+import { AudioWaveVisualizer } from '../components/room/AudioWaveVisualizer';
+import { FloatingReactions } from '../components/room/FloatingReactions';
 
 export const VoiceRoomPreviewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -159,6 +162,50 @@ export const VoiceRoomPreviewPage: React.FC = () => {
     );
 
   const canCloseRoom = isHost || isAdmin || user?.role === 'admin';
+
+  // Ambient speaker simulation for demo participants when user is listening
+  const [simulatedSpeakerId, setSimulatedSpeakerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Only simulate when user is not speaking and there are other participants
+    if (isLocalSpeaking || participants.length <= 1) {
+      setSimulatedSpeakerId(null);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const otherParticipants = participants.filter(
+        (p) => p.userId !== currentUserId && p.userId !== user?.firebaseUid
+      );
+      if (otherParticipants.length > 0 && Math.random() > 0.3) {
+        const randomSpeaker = otherParticipants[Math.floor(Math.random() * otherParticipants.length)];
+        setSimulatedSpeakerId(randomSpeaker.userId);
+
+        setTimeout(() => {
+          setSimulatedSpeakerId(null);
+        }, 4000);
+      }
+    }, 8500);
+
+    return () => clearInterval(interval);
+  }, [isLocalSpeaking, participants, currentUserId, user?.firebaseUid]);
+
+  // Determine active speaker name and whether audio is active
+  const activeSpeakerParticipant = participants.find((p) => p.userId === simulatedSpeakerId);
+  const activeRemoteVoiceSpeaker = voiceParticipants.find((vp) => vp.isSpeaking);
+
+  const activeSpeakerName = isLocalSpeaking
+    ? (user?.name || user?.username || 'You')
+    : activeRemoteVoiceSpeaker?.displayName ||
+      activeRemoteVoiceSpeaker?.username ||
+      activeSpeakerParticipant?.displayName ||
+      activeSpeakerParticipant?.username;
+
+  const isAnyoneSpeaking = Boolean(
+    isLocalSpeaking ||
+    activeRemoteVoiceSpeaker ||
+    simulatedSpeakerId
+  );
 
   const handleJoin = async () => {
     if (!id) return;
@@ -573,65 +620,74 @@ export const VoiceRoomPreviewPage: React.FC = () => {
             </div>
           )}
 
-          {/* Seating Grid with Animated Participant Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-            <AnimatePresence mode="popLayout">
-              {participants.map((p) => {
-                const isCurrentUser = Boolean(
-                  (currentUserId && (p.userId === currentUserId || p.userId === user?.firebaseUid)) ||
-                  (user?.username && p.username === user.username)
-                );
-                const participantIsHost = p.role === 'host' || room.hostId === p.userId;
+          {/* Real-time Studio Audio Spectrum & Broadcast Visualizer */}
+          <AudioWaveVisualizer
+            isAnyoneSpeaking={isAnyoneSpeaking}
+            speakerName={activeSpeakerName}
+            isCurrentUserSpeaking={isLocalSpeaking}
+            isVoiceConnected={isVoiceJoined}
+          />
 
-                // Voice status for this participant
-                const inVoice = isCurrentUser
-                  ? isVoiceJoined
-                  : voiceParticipants.some((vp) => vp.userId === p.userId);
+          {/* Seating Stage Container with Floating Reactions Layer */}
+          <div className="relative rounded-3xl p-3 sm:p-4 bg-gradient-to-b from-slate-100/70 via-white to-slate-50 dark:from-slate-900/60 dark:via-slate-900/40 dark:to-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 space-y-4 shadow-inner">
+            {/* Seating Grid with Animated Participant Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 relative z-10">
+              <AnimatePresence mode="popLayout">
+                {participants.map((p) => {
+                  const isCurrentUser = Boolean(
+                    (currentUserId && (p.userId === currentUserId || p.userId === user?.firebaseUid)) ||
+                    (user?.username && p.username === user.username)
+                  );
+                  const participantIsHost = p.role === 'host' || room.hostId === p.userId;
 
-                const speaking = isCurrentUser
-                  ? isLocalSpeaking
-                  : voiceParticipants.find((vp) => vp.userId === p.userId)?.isSpeaking || false;
+                  // Voice status for this participant
+                  const inVoice = isCurrentUser
+                    ? isVoiceJoined
+                    : voiceParticipants.some((vp) => vp.userId === p.userId);
 
-                const muted = isCurrentUser
-                  ? isVoiceMuted
-                  : voiceParticipants.find((vp) => vp.userId === p.userId)?.isMuted || false;
+                  const speaking = isCurrentUser
+                    ? isLocalSpeaking
+                    : voiceParticipants.find((vp) => vp.userId === p.userId)?.isSpeaking ||
+                      simulatedSpeakerId === p.userId ||
+                      false;
 
-                return (
-                  <ParticipantCard
-                    key={p.userId || p._id}
-                    participant={p}
-                    isCurrentUser={isCurrentUser}
-                    isHost={participantIsHost}
-                    isInVoice={inVoice}
-                    isSpeaking={speaking}
-                    isMuted={muted}
-                  />
-                );
-              })}
-            </AnimatePresence>
+                  const muted = isCurrentUser
+                    ? isVoiceMuted
+                    : voiceParticipants.find((vp) => vp.userId === p.userId)?.isMuted || false;
 
-            {/* Empty Seats */}
-            {Array.from({
-              length: Math.max(0, maxCapacity - participants.length),
-            }).map((_, i) => (
-              <div
-                key={`empty-seat-${i}`}
-                className="bg-slate-50/70 dark:bg-slate-900/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-4 sm:p-5 flex flex-col items-center justify-center min-h-[210px] text-center space-y-2"
-              >
-                <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
-                  <Users className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-medium text-slate-500">Open Stage Seat</span>
-                {!isParticipant && !isClosed && (
-                  <button
-                    onClick={handleJoin}
-                    className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
-                  >
-                    Click to join room
-                  </button>
-                )}
-              </div>
-            ))}
+                  return (
+                    <ParticipantCard
+                      key={p.userId || p._id}
+                      participant={p}
+                      isCurrentUser={isCurrentUser}
+                      isHost={participantIsHost}
+                      isInVoice={inVoice}
+                      isSpeaking={speaking}
+                      isMuted={muted}
+                      isHandRaised={isCurrentUser ? handRaised : false}
+                    />
+                  );
+                })}
+              </AnimatePresence>
+
+              {/* Animated Empty Stage Seats */}
+              {Array.from({
+                length: Math.max(0, maxCapacity - participants.length),
+              }).map((_, i) => (
+                <OpenStageSeat
+                  key={`empty-seat-${i}`}
+                  seatIndex={participants.length + i}
+                  isParticipant={isParticipant}
+                  isClosed={isClosed}
+                  onJoin={handleJoin}
+                />
+              ))}
+            </div>
+
+            {/* Interactive Live Reaction Cannon */}
+            <div className="relative z-20 pt-1">
+              <FloatingReactions isAnyoneSpeaking={isAnyoneSpeaking} />
+            </div>
           </div>
 
           {/* Bottom Audio & Speaking Helper Bar */}

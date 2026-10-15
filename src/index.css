@@ -1,3 +1,189 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* Real-time Voice Room Animation Keyframes */
+@keyframes audio-bar-1 {
+  0%, 100% { height: 4px; }
+  50% { height: 18px; }
+}
+
+@keyframes audio-bar-2 {
+  0%, 100% { height: 12px; }
+  50% { height: 26px; }
+}
+
+@keyframes audio-bar-3 {
+  0%, 100% { height: 6px; }
+  50% { height: 20px; }
+}
+
+@keyframes audio-bar-4 {
+  0%, 100% { height: 8px; }
+  50% { height: 15px; }
+}
+
+@keyframes sound-ripple-1 {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes sound-ripple-2 {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.05);
+    opacity: 0;
+  }
+}
+
+@keyframes sound-ripple-3 {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2.45);
+    opacity: 0;
+  }
+}
+
+@keyframes float-reaction-up {
+  0% {
+    transform: translateY(0) scale(0.5) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(-25px) scale(1.25) rotate(-6deg);
+  }
+  75% {
+    opacity: 0.9;
+    transform: translateY(-140px) scale(1.1) rotate(6deg);
+  }
+  100% {
+    transform: translateY(-220px) scale(0.8) rotate(-10deg);
+    opacity: 0;
+  }
+}
+
+@keyframes wave-hand {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-16deg) scale(1.1); }
+  40% { transform: rotate(14deg) scale(1.1); }
+  60% { transform: rotate(-12deg); }
+  80% { transform: rotate(10deg); }
+}
+
+@keyframes seat-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 20px 2px rgba(99, 102, 241, 0.2);
+  }
+}
+
+@keyframes avatar-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.animate-audio-bar-1 {
+  animation: audio-bar-1 0.75s ease-in-out infinite;
+}
+
+.animate-audio-bar-2 {
+  animation: audio-bar-2 0.6s ease-in-out infinite;
+}
+
+.animate-audio-bar-3 {
+  animation: audio-bar-3 0.85s ease-in-out infinite;
+}
+
+.animate-audio-bar-4 {
+  animation: audio-bar-4 0.65s ease-in-out infinite;
+}
+
+.animate-ripple-1 {
+  animation: sound-ripple-1 1.6s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+.animate-ripple-2 {
+  animation: sound-ripple-2 1.6s cubic-bezier(0, 0.2, 0.8, 1) infinite 0.4s;
+}
+
+.animate-ripple-3 {
+  animation: sound-ripple-3 1.6s cubic-bezier(0, 0.2, 0.8, 1) infinite 0.8s;
+}
+
+.animate-wave-hand {
+  animation: wave-hand 1.2s ease-in-out infinite;
+  transform-origin: 70% 70%;
+}
+
+.animate-seat-glow {
+  animation: seat-pulse-glow 2.5s ease-in-out infinite;
+}
+
+.animate-avatar-breathe {
+  animation: avatar-breathe 4s ease-in-out infinite;
+}
+
+/* Room Card irresistible animations */
+@keyframes button-shimmer {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  50%, 100% { transform: translateX(250%) skewX(-20deg); }
+}
+
+.animate-shimmer {
+  animation: button-shimmer 2.8s ease-in-out infinite;
+}
+
+@keyframes live-ring-ping {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.animate-live-ring {
+  animation: live-ring-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes active-speaker-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4), 0 0 14px 2px rgba(16, 185, 129, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0), 0 0 22px 6px rgba(16, 185, 129, 0.45);
+  }
+}
+
+.animate-speaker-glow {
+  animation: active-speaker-pulse 2s ease-in-out infinite;
+}
+
+@keyframes open-seat-call {
+  0%, 100% {
+    transform: scale(1);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    transform: scale(1.06);
+    border-color: rgba(99, 102, 241, 0.85);
+    box-shadow: 0 0 15px 2px rgba(99, 102, 241, 0.25);
+  }
+}
+
+.animate-open-seat-call {
+  animation: open-seat-call 2.2s ease-in-out infinite;
+}
+
